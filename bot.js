@@ -5,7 +5,7 @@ const axios = require('axios');
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 
 // Your bot token (use environment variable for security)
-const token = process.env.'MTI4NTYwMDQxMDc2OTQyNDM4NA.GFY90E.XGjbe00kUQhAt_kR-lOseW0TDFsr0NDSTKxCNk';
+const token = process.env.'MTI4NTYwMDQxMDc2OTQyNDM4NA.GkOfzC.-in5AfPeq4Y8-2dwg0V_11q9HybZZ_kg3rh_98';
 
 // The channel ID where the floor price updates will be reflected in the name
 const channelId = '1285605233699061863'; // Replace with your actual channel ID
