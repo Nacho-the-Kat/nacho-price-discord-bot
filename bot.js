@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
 const axios = require('axios');
 
@@ -5,7 +6,7 @@ const axios = require('axios');
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 
 // Your bot token (use environment variable for security)
-const token = process.env.'MTI4NTYwMDQxMDc2OTQyNDM4NA.GkOfzC.-in5AfPeq4Y8-2dwg0V_11q9HybZZ_kg3rh_98';
+const token = process.env.DISCORD_BOT_TOKEN;
 
 // The channel ID where the floor price updates will be reflected in the name
 const channelId = '1285605233699061863'; // Replace with your actual channel ID
@@ -19,7 +20,7 @@ const getTimestamp = () => {
 async function getFloorPrice(retries = 3) {
     const timestamp = getTimestamp();
     const apiUrl = `https://storage.googleapis.com/kspr-api-v1/marketplace/marketplace.json?t=${timestamp}`;
-    
+
     console.log('Fetching floor price from API...'); // Log when fetching starts
 
     for (let attempt = 0; attempt < retries; attempt++) {
@@ -49,11 +50,13 @@ async function getFloorPrice(retries = 3) {
 async function updateChannelName() {
     const floorPrice = await getFloorPrice();
 
+    console.log('Attempting to update channel name...'); // Log this line
+
     if (floorPrice !== null) {
         const channel = await client.channels.fetch(channelId);
         const newChannelName = `KASPER Floor: ${floorPrice} KAS`;
 
-        console.log(`Updating channel name to: ${newChannelName}`); // Log the new channel name
+        console.log(`New channel name will be: ${newChannelName}`); // Log the new channel name
 
         // Set the new channel name
         try {
