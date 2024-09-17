@@ -1,0 +1,16 @@
+{
+  "name": "kasper-bot",
+  "version": "1.0.0",
+  "description": "A Discord bot to track Kasper floor price",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "discord.js": "^14.3.0"
+  },
+  "engines": {
+    "node": ">=16.6.0"
+  }
+}
