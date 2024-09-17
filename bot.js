@@ -30,7 +30,7 @@ async function getFloorPrice(retries = 3) {
 
             // Extract the KASPER floor price from the data
             const kasperData = data.KASPER;
-            const floorPrice = kasperData ? kasperData.floor_price.toFixed(3) : null; // Format to 3 decimal places
+            const floorPrice = kasperData ? kasperData.floor_price.toFixed(4) : null; // Format to 4 decimal places
 
             console.log(`Fetched floor price: ${floorPrice} KAS`); // Log the fetched price
             return floorPrice;
