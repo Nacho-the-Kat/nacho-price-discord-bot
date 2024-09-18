@@ -9,14 +9,14 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 const token = process.env.DISCORD_BOT_TOKEN;
 
 // The channel ID where the floor price updates will be reflected in the name
-const channelId = '1285605233699061863'; // Replace with your actual channel ID
+const channelId = '1285774928645324831'; // Replace with your actual channel ID
 
 // Function to get the current timestamp (seconds since Epoch)
 const getTimestamp = () => {
     return Math.floor(Date.now() / 1000);
 };
 
-// Function to fetch Kasper floor price from the API with retries
+// Function to fetch NACHO floor price from the API with retries
 async function getFloorPrice(retries = 3) {
     const timestamp = getTimestamp();
     const apiUrl = `https://storage.googleapis.com/kspr-api-v1/marketplace/marketplace.json?t=${timestamp}`;
@@ -28,14 +28,14 @@ async function getFloorPrice(retries = 3) {
             const response = await axios.get(apiUrl);
             const data = response.data;
 
-            // Extract the KASPER floor price from the data
-            const kasperData = data.KASPER;
-            const floorPrice = kasperData ? kasperData.floor_price.toFixed(5) : null; // Format to 5 decimal places
+            // Extract the NACHO floor price from the data
+            const nachoData = data.NACHO;
+            const floorPrice = nachoData ? nachoData.floor_price.toFixed(5) : null; // Format to 5 decimal places
 
             console.log(`Fetched floor price: ${floorPrice} KAS`); // Log the fetched price
             return floorPrice;
         } catch (error) {
-            console.error('Error fetching Kasper floor price:', error.message); // Log specific error message
+            console.error('Error fetching NACHO floor price:', error.message); // Log specific error message
             if (attempt < retries - 1) {
                 console.log(`Retrying... (${attempt + 1})`);
                 await new Promise(resolve => setTimeout(resolve, 1000)); // Wait before retrying
@@ -46,7 +46,7 @@ async function getFloorPrice(retries = 3) {
     return null; // Return null if all attempts fail
 }
 
-// Function to update the channel name with the KASPER floor price
+// Function to update the channel name with the NACHO floor price
 async function updateChannelName() {
     const floorPrice = await getFloorPrice();
 
@@ -54,7 +54,7 @@ async function updateChannelName() {
 
     if (floorPrice !== null) {
         const channel = await client.channels.fetch(channelId);
-        const newChannelName = `KASPER Floor: ${floorPrice} KAS`;
+        const newChannelName = `NACHO Floor: ${floorPrice} KAS`;
 
         console.log(`New channel name will be: ${newChannelName}`); // Log the new channel name
 
