@@ -11,6 +11,9 @@ const token = process.env.DISCORD_BOT_TOKEN;
 // The channel ID where the floor price updates will be reflected in the name
 const channelId = '1285774928645324831'; // Replace with your actual channel ID
 
+// The channel ID where the market cap updates will be reflected in the name
+const marketCapChannelId = '1286908343482585169'; // Channel ID for market cap updates
+
 // Function to get the current timestamp (seconds since Epoch)
 const getTimestamp = () => {
     return Math.floor(Date.now() / 1000);
@@ -46,6 +49,33 @@ async function getFloorPrice(retries = 3) {
     return null; // Return null if all attempts fail
 }
 
+// Function to fetch Nacho market cap from the API
+async function getMarketCap() {
+    const apiUrl = 'https://api-v2-do.kas.fyi/market';  // Fetch from the /prices endpoint
+    try {
+        const response = await axios.get(apiUrl);
+        const data = response.data;
+
+        if (data && data.price) {
+            const floorPrice = await getFloorPrice();
+            if (floorPrice !== null) {
+                const marketCap = floorPrice * 287000000000 * data.price;
+                const formattedMarketCap = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(marketCap);
+                return formattedMarketCap;
+            } else {
+                console.error('Failed to fetch floor price.');
+                return null;
+            }
+        } else {
+            console.error('No price data found in the /market response');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching market cap from /market API:', error);
+        return null;
+    }
+}
+
 // Function to update the channel name with the NACHO floor price
 async function updateChannelName() {
     const floorPrice = await getFloorPrice();
@@ -54,7 +84,7 @@ async function updateChannelName() {
 
     if (floorPrice !== null) {
         const channel = await client.channels.fetch(channelId);
-        const newChannelName = `NACHO Floor: ${floorPrice} KAS`;
+        const newChannelName = `Floor: ${floorPrice} KAS`;
 
         console.log(`New channel name will be: ${newChannelName}`); // Log the new channel name
 
@@ -70,13 +100,40 @@ async function updateChannelName() {
     }
 }
 
-// Set an interval to update the channel name every 15 minutes (900000 ms)
+// Function to update the market cap channel name
+async function updateMarketCapChannelName() {
+    const marketCap = await getMarketCap();
+
+    console.log('Attempting to update market cap channel name...'); // Log this line
+
+    if (marketCap !== null) {
+        const channel = await client.channels.fetch(marketCapChannelId);
+        const newChannelName = `MC: ${marketCap} USD`;  
+
+        console.log(`New market cap channel name will be: ${newChannelName}`); // Log the new channel name
+
+        try {
+            await channel.setName(newChannelName);
+            console.log(`Market cap channel name updated to: ${newChannelName}`);
+        } catch (error) {
+            console.error('Error updating market cap channel name:', error.message); // Log specific error message
+        }
+    } else {
+        console.log('No market cap available to update the channel name.');
+    }
+}
+
+// Set an interval to update the market cap channel name every 15 seconds
 client.once('ready', () => {
     console.log('Bot is ready!');
 
-    // Update the channel name immediately, then every 15 minutes
+    // Update the floor price channel name immediately, then every 15 minutes
     updateChannelName();
     setInterval(updateChannelName, 900000); // 15 minutes
+
+    // Update the market cap channel name every 15 minutes
+    updateMarketCapChannelName();
+    setInterval(updateMarketCapChannelName, 900000); // 15 minutes
 });
 
 // Log in to Discord with the bot's token
